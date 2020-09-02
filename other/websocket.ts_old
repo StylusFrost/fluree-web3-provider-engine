@@ -1,0 +1,153 @@
+const Backoff = require('backoff')
+import { EventEmitter } from 'events'
+import WebSocket from 'ws';
+import Subprovider from './subprovider'
+import createPayload from '../util/create-payload'
+
+export default class WebsocketSubprovider extends Subprovider {
+    backoff: any
+    socket: any
+    unhandledRequests: any
+    pendingRequests:  any
+    connectTime: number
+    url: any
+    origin: any
+    log: any
+    constructor(opts?:any) {
+        super()
+        EventEmitter.call(this)
+        Object.defineProperties(this, {
+            backoff: {
+                value: Backoff.exponential({
+                    randomisationFactor: 0.2,
+                    maxDelay: 5000
+                })
+            },
+            connectTime: {
+                value: null,
+                writable: true
+            },
+            log: {
+                value: opts['debug']
+                    ? (...args) => console.info.apply(console, ['[WSProvider]', ...args])
+                    : () => { }
+            },
+            origin: {
+                value: opts['origin']
+            },
+            pendingRequests: {
+                value: new Map()
+            },
+            socket: {
+                value: null,
+                writable: true
+            },
+            unhandledRequests: {
+                value: []
+            },
+            url: {
+                value: opts['rpcUrl']
+            }
+        })
+
+        this.handleSocketClose = this.handleSocketClose.bind(this)
+        this.handleSocketMessage = this.handleSocketMessage.bind(this)
+        this.handleSocketOpen = this.handleSocketOpen.bind(this)
+
+        // Called when a backoff timeout has finished. Time to try reconnecting.
+        this.backoff.on('ready', () => {
+            this.openSocket()
+        })
+
+        this.openSocket()
+    }
+
+    public handleRequest(payload: Object, next, end) {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            this.unhandledRequests.push(Array.from(arguments))
+            this.log('Socket not open. Request queued.')
+            return
+        }
+
+        this.pendingRequests.set(payload['id'], [payload, end])
+
+        const newPayload = new createPayload(payload)
+        delete newPayload['origin']
+
+        this.socket.send(JSON.stringify(newPayload))
+        this.log(`Sent: ${newPayload['method']} #${newPayload['id']}`)
+    }
+
+    public handleSocketClose({ reason, code }) {
+        this.log(`Socket closed, code ${code} (${reason || 'no reason'})`)
+        // If the socket has been open for longer than 5 seconds, reset the backoff
+        if (this.connectTime && Date.now() - this.connectTime > 5000) {
+            this.backoff.reset()
+        }
+
+        this.socket.removeEventListener('close', this.handleSocketClose)
+        this.socket.removeEventListener('message', this.handleSocketMessage)
+        this.socket.removeEventListener('open', this.handleSocketOpen)
+
+        this.socket = null
+        this.backoff.backoff()
+    }
+
+    public handleSocketMessage(message) {
+        let payload
+
+        try {
+            payload = JSON.parse(message.data)
+        } catch (e) {
+            this.log('Received a message that is not valid JSON:', payload)
+            return
+        }
+
+        // check if server-sent notification
+        if (payload.id === undefined) {
+            return this.engine.emit('data', null, payload)
+        }
+
+        // ignore if missing
+        if (!this.pendingRequests.has(payload.id)) {
+            return
+        }
+
+        // retrieve payload + arguments
+        const [originalReq, end] = this.pendingRequests.get(payload.id)
+        this.pendingRequests.delete(payload.id)
+
+        this.log(`Received: ${originalReq.method} #${payload.id}`)
+
+        // forward response
+        if (payload.error) {
+            return end(new Error(payload.error.message))
+        }
+        end(null, payload.result)
+    }
+
+    handleSocketOpen() {
+        this.log('Socket open.')
+        this.connectTime = Date.now()
+
+        // Any pending requests need to be resent because our session was lost
+        // and will not get responses for them in our new session.
+        this.pendingRequests.forEach(([payload, end]) => {
+            this.unhandledRequests.push([payload, null, end])
+        })
+        this.pendingRequests.clear()
+
+        const unhandledRequests = this.unhandledRequests.splice(0, this.unhandledRequests.length)
+        unhandledRequests.forEach(request => {
+            this.handleRequest.apply(this, request)
+        })
+    }
+
+    private openSocket() {
+        this.log('Opening socket...')
+        this.socket = new WebSocket(this.url, [], this.origin ? { headers: { origin: this.origin } } : {})
+        this.socket.addEventListener('close', this.handleSocketClose)
+        this.socket.addEventListener('message', this.handleSocketMessage)
+        this.socket.addEventListener('open', this.handleSocketOpen)
+    }
+}

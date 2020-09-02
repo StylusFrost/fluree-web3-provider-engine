@@ -1,0 +1,88 @@
+{
+  "name": "fluree-web3-provider-engine",
+  "version": "0.1.0",
+  "description": "A library for composing Fluree provider objects using middleware modules",
+  "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "flureejs-config-ts-build",
+    "prepublishOnly": "npm run format && npm run tslint && npm run test",
+    "docs:build": "typedoc --out docs --mode file --readme none --theme markdown --mdEngine github --excludeNotExported src",
+    "coverage": "flureejs-config-coverage",
+    "format": "flureejs-config-format",
+    "format:fix": "flureejs-config-format-fix",
+    "lint": "flureejs-config-lint",
+    "lint:fix": "flureejs-config-lint-fix",
+    "test:browser": "karma start  karma.conf.js",
+    "tsc": "flureejs-config-ts-compile",
+    "test": "npm run build && nyc --reporter=lcov mocha   --require ts-node/register --require source-map-support/register  ./test/**/*.spec.ts",
+    "tslint": "flureejs-config-tslint",
+    "tslint:fix": "flureejs-config-tslint-fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StylusFrost/fluree-web3-provider-engine.git"
+  },
+  "keywords": [
+    "Fluree",
+    "MetaFluree"
+  ],
+  "author": "Pedro Miguel Díaz Peña <pm.diaz.pena@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/StylusFrost/fluree-web3-provider-engine/issues"
+  },
+  "homepage": "https://github.com/StylusFrost/fluree-web3-provider-engine",
+  "dependencies": {
+    "events": "^1.1.1",
+    "async": "^2.5.0",
+    "xtend": "^4.0.1",
+    "flureejs-tx": "^0.1.2",
+    "flureejs-request": "^0.1.2",
+    "flureejs-query": "^0.1.2",
+    "flureejs-utils": "^0.1.9",
+    "backoff": "^2.5.0",
+    "eth-block-tracker": "^4.4.2",
+    "ethereumjs-util": "^5.1.5",
+    "semaphore": "^1.0.3",
+    "json-stable-stringify": "^1.0.1",
+    "is-hex-prefixed": "^1.0.0",
+    "cross-fetch":"^3.0.5",
+    "json-rpc-error":"^2.0.0",
+    "promise-to-callback":"^1.0.0"
+  },
+  "devDependencies": {
+    "@flureejs/config-coverage": "^0.1.5",
+    "@flureejs/config-format": "^0.1.5",
+    "@flureejs/config-tslint": "^0.1.5",
+    "@flureejs/config-typescript": "^0.1.6",
+    "@types/async": "^3.2.3",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.10",
+    "husky": "^2.1.0",
+    "karma": "^5.0.2",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-mocha": "^2.0.0",
+    "karma-typescript": "^5.0.2",
+    "mocha": "^7.1.2",
+    "nyc": "^15.0.1",
+    "prettier": "^1.15.3",
+    "source-map-support": "^0.5.12",
+    "strip-hex-prefix": "^1.0.0",
+    "ts-node": "^8.9.1",
+    "tslint": "^5.12.0",
+    "typedoc": "^0.15.0",
+    "typedoc-plugin-markdown": "^1.2.0",
+    "typescript": "^3.8.3",
+    "typestrict": "^1.0.2"
+  }
+}
