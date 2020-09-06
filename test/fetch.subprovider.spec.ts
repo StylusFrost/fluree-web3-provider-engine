@@ -29,7 +29,6 @@ const privateKey = Buffer.from(
 
 describe('fetch test with sign', () => {
   it('verify fluree_sign_health ( Sign not necesary fluree_health )', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -89,7 +88,8 @@ describe('fetch test with sign', () => {
       assert.equal(
         providerB.getHandled('fluree_sign_health').length,
         1,
-        'providerB did handle "fluree_sign_health"')
+        'providerB did handle "fluree_sign_health"',
+      )
 
       assert(response['result']['ready'])
       assert(response['result']['utilization'])
@@ -99,7 +99,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_dbs ( Sign not necesary fluree_dbs)', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -141,13 +140,21 @@ describe('fetch test with sign', () => {
       assert.ifError(err)
       assert.ok(response, 'has response')
 
-      assert.equal(providerA.getWitnessed('fluree_sign_dbs').length, 1, 'providerA did see "fluree_sign_dbs"')
+      assert.equal(
+        providerA.getWitnessed('fluree_sign_dbs').length,
+        1,
+        'providerA did see "fluree_sign_dbs"',
+      )
       assert.equal(
         providerA.getHandled('fluree_sign_dbs').length,
         0,
         'providerA did NOT handle "fluree_sign_dbs"',
       )
-      assert.equal(providerB.getWitnessed('fluree_sign_dbs').length, 1, 'providerB did see "fluree_sign_dbs"')
+      assert.equal(
+        providerB.getWitnessed('fluree_sign_dbs').length,
+        1,
+        'providerB did see "fluree_sign_dbs"',
+      )
       assert.equal(
         providerB.getHandled('fluree_sign_dbs').length,
         1,
@@ -160,7 +167,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_new_db ( Sign not necesary fluree_new_db)', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -240,7 +246,7 @@ describe('fetch test with sign', () => {
           getAccounts: function(cb: any) {
             cb(null, [authID])
           },
-          signRequest:function(requestParams: any, cb: any) {
+          signRequest: function(requestParams: any, cb: any) {
             var request = new Request(requestParams)
             request.sign(privateKey)
             cb(null, request)
@@ -249,7 +255,7 @@ describe('fetch test with sign', () => {
       )
 
       // Fetch provider
-      const providerC = new injectMetrics (new FetchSubprovider({ rpcUrl, database }))
+      const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
       var engine = new ProviderEngine()
       engine.addProvider(providerA)
@@ -300,7 +306,6 @@ describe('fetch test with sign', () => {
     }, 20000)
   })
   it('verify fluree_sign_list_snapshots', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -368,7 +373,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_export', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -436,7 +440,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_query', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderQuery({ rpcUrl, database }))
 
@@ -446,7 +449,7 @@ describe('fetch test with sign', () => {
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-      signQuery: function(queryParams: any, cb: any) {
+        signQuery: function(queryParams: any, cb: any) {
           var query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
@@ -512,7 +515,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_multi_query', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderQuery({ rpcUrl, database }))
 
@@ -522,7 +524,7 @@ describe('fetch test with sign', () => {
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-      signQuery: function(queryParams: any, cb: any) {
+        signQuery: function(queryParams: any, cb: any) {
           var query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
@@ -588,7 +590,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_block_query', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderQuery({ rpcUrl, database }))
 
@@ -598,7 +599,7 @@ describe('fetch test with sign', () => {
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-      signQuery: function(queryParams: any, cb: any) {
+        signQuery: function(queryParams: any, cb: any) {
           var query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
@@ -656,7 +657,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_history_query ', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderQuery({ rpcUrl, database }))
 
@@ -666,7 +666,7 @@ describe('fetch test with sign', () => {
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-      signQuery: function(queryParams: any, cb: any) {
+        signQuery: function(queryParams: any, cb: any) {
           var query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
@@ -731,7 +731,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify fluree_sign_graphql_query', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderQuery({ rpcUrl, database }))
 
@@ -741,7 +740,7 @@ describe('fetch test with sign', () => {
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-      signQuery: function(queryParams: any, cb: any) {
+        signQuery: function(queryParams: any, cb: any) {
           var query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
@@ -879,7 +878,6 @@ describe('fetch test with sign', () => {
   })*/
 
   it('verify fluree_sign_transact', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderTransaction({ rpcUrl, database }))
 
@@ -892,12 +890,13 @@ describe('fetch test with sign', () => {
         signTransaction: function(txParams: any, cb: any) {
           var tx = new Transaction(txParams)
           tx.sign(privateKey)
-          cb(null, tx) }
-        }
-    ))
+          cb(null, tx)
+        },
+      }),
+    )
 
     // handle nonce requests
-    var providerC = new injectMetrics( new NonceTracker())
+    var providerC = new injectMetrics(new NonceTracker())
 
     // handle all bottom requests
     var providerD = new injectMetrics(
@@ -989,7 +988,6 @@ describe('fetch test with sign', () => {
   })
 
   it('verify fluree_sign_reindex ( Sign not necesary fluree_reindex )', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -1058,7 +1056,6 @@ describe('fetch test with sign', () => {
   })
 
   it('verify fluree_sign_gen_flakes', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -1136,7 +1133,6 @@ describe('fetch test with sign', () => {
   })
 
   it('verify fluree_sign_block_range_with_txn', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -1205,7 +1201,6 @@ describe('fetch test with sign', () => {
   })
 
   it('verify fluree_sign_ledger_stats', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 
@@ -1273,7 +1268,6 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify sign_fluree_delete_db', function(done) {
- 
     // handle nothing
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
 

@@ -36,22 +36,23 @@ describe('Sign', () => {
     // sign all
     var providerB = new injectMetrics(
       new HookedWalletProvider({
-        getAccounts: function (cb: any) {
+        getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-        signTransaction: function (txParams: any, cb: any) {
+        signTransaction: function(txParams: any, cb: any) {
           var tx = new Transaction(txParams)
           tx.sign(privateKey)
           cb(null, tx)
         },
-      }))
+      }),
+    )
 
     // handle nonce requests
     var providerC = new injectMetrics(new NonceTracker())
     // handle all bottom requests
     var providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendTransaction: function (payload: any, next: Function, done: Function) {
+        fluree_sendTransaction: function(payload: any, next: Function, done: Function) {
           let rawTx = payload.params[0]
           var tx = new Transaction(rawTx)
           done(null, tx)
@@ -80,7 +81,7 @@ describe('Sign', () => {
     }
 
     engine.start()
-    engine.sendAsync(createPayload(txPayload), function (err: Error, response: any) {
+    engine.sendAsync(createPayload(txPayload), function(err: Error, response: any) {
       assert.ifError(err)
       assert.ok(response, 'has response')
 
@@ -143,10 +144,10 @@ describe('Sign', () => {
     // sign all
     var providerB = new injectMetrics(
       new HookedWalletProvider({
-        getAccounts: function (cb: any) {
+        getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-        signRequest: function (requestParams: any, cb: any) {
+        signRequest: function(requestParams: any, cb: any) {
           var request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
@@ -156,7 +157,7 @@ describe('Sign', () => {
     // handle all bottom requests
     var providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendRequest: function (payload: any, next: Function, done: Function) {
+        fluree_sendRequest: function(payload: any, next: Function, done: Function) {
           let rawRequest = payload.params[0]
           var request = new Request(rawRequest)
           done(null, request)
@@ -180,7 +181,7 @@ describe('Sign', () => {
     }
 
     engine.start()
-    engine.sendAsync(createPayload(requestPayload), function (err: Error, response: any) {
+    engine.sendAsync(createPayload(requestPayload), function(err: Error, response: any) {
       assert.ifError(err)
       assert.ok(response, 'has response')
 
@@ -231,10 +232,10 @@ describe('Sign', () => {
     // sign all
     var providerB = new injectMetrics(
       new HookedWalletProvider({
-        getAccounts: function (cb: any) {
+        getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-        signQuery: function (queryParams: any, cb: any) {
+        signQuery: function(queryParams: any, cb: any) {
           var query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
@@ -244,7 +245,7 @@ describe('Sign', () => {
     // handle all bottom requests
     var providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendQuery: function (payload: any, next: Function, done: Function) {
+        fluree_sendQuery: function(payload: any, next: Function, done: Function) {
           let rawQuery = payload.params[0]
           var query = new Query(rawQuery)
           done(null, query)
@@ -275,7 +276,7 @@ describe('Sign', () => {
     }
 
     engine.start()
-    engine.sendAsync(createPayload(requestPayload), function (err: Error, response: any) {
+    engine.sendAsync(createPayload(requestPayload), function(err: Error, response: any) {
       assert.ifError(err)
       assert.ok(response, 'has response')
 
@@ -309,7 +310,7 @@ describe('Sign', () => {
     })
   })
 
-  it('with no such account', function (done) {
+  it('with no such account', function(done) {
     const authID = Buffer.from(
       '5466477641644b48326e526456347a503479427a346b4a325239577a59484465324556',
       'hex',
@@ -324,10 +325,10 @@ describe('Sign', () => {
     // sign all
     var providerB = new injectMetrics(
       new HookedWalletProvider({
-        getAccounts: function (cb: any) {
+        getAccounts: function(cb: any) {
           cb(null, [authID])
         },
-      })
+      }),
     )
 
     // handle nonce requests
@@ -335,7 +336,7 @@ describe('Sign', () => {
     // handle all bottom requests
     var providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendTransaction: function (payload: any, next: Function, done: Function) {
+        fluree_sendTransaction: function(payload: any, next: Function, done: Function) {
           let rawTx = payload.params[0]
           var tx = new Transaction(rawTx)
           done(null, tx)
@@ -363,7 +364,7 @@ describe('Sign', () => {
     }
 
     engine.start()
-    engine.sendAsync(createPayload(txPayload), function (err: Error, response: any) {
+    engine.sendAsync(createPayload(txPayload), function(err: Error, response: any) {
       assert.ok(err, 'did error')
       engine.stop()
       done()

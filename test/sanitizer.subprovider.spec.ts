@@ -21,13 +21,11 @@ describe('Sanitizer', () => {
   it('Sanitizer removes unknown keys from tx and generate necesary keys', function(done) {
     const engine = new ProviderEngine()
 
-   
-
     const providerA = new injectMetrics(new SanitizerSubproviderTx({ rpcUrl, database }))
     engine.addProvider(providerA)
 
     const checkSanitizer = new FixtureProvider({
-      'fluree_sign_transact': (req: any, next: Function, end: Function) => {
+      fluree_sign_transact: (req: any, next: Function, end: Function) => {
         if (req.method !== 'fluree_sign_transact') return next()
         assert.equal(
           req['params'][0].type,
@@ -80,13 +78,11 @@ describe('Sanitizer', () => {
   it('Sanitizer removes unknown keys from request and generate necesary keys', function(done) {
     const engine = new ProviderEngine()
 
-   
-
     const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
     engine.addProvider(providerA)
 
     const checkSanitizer = new FixtureProvider({
-      'fluree_sign_delete_db': (req: any, next: Function, end: Function) => {
+      fluree_sign_delete_db: (req: any, next: Function, end: Function) => {
         if (req.method !== 'fluree_sign_delete_db') return next()
         assert.equal(
           req['params'][0].type,
@@ -135,13 +131,11 @@ describe('Sanitizer', () => {
   it('Sanitizer removes unknown keys from query and generate necesary keys', function(done) {
     const engine = new ProviderEngine()
 
-   
-
     const providerA = new injectMetrics(new SanitizerSubproviderQuery({ rpcUrl, database }))
     engine.addProvider(providerA)
 
     const checkSanitizer = new FixtureProvider({
-      'fluree_sign_query': (req: any, next: Function, end: Function) => {
+      fluree_sign_query: (req: any, next: Function, end: Function) => {
         if (req.method !== 'fluree_sign_query') return next()
         assert.equal(req['params'][0].type, '0x' + Buffer.from('fluree_sign_query').toString('hex'))
         assert.equal(

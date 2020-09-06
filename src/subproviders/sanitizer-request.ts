@@ -59,10 +59,10 @@ export default class SanitizerSubproviderRequest extends Subprovider {
   }
   private cloneRequestParams(RequestParams: any) {
     const self = this
-    var sanitized = permitted.reduce(function (copy: any, permitted: string) {
+    var sanitized = permitted.reduce(function(copy: any, permitted: string) {
       if (permitted in RequestParams) {
         if (Array.isArray(RequestParams[permitted])) {
-          copy[permitted] = RequestParams[permitted].map(function (item: string) {
+          copy[permitted] = RequestParams[permitted].map(function(item: string) {
             return self.sanitize(item)
           })
         } else {
@@ -77,7 +77,7 @@ export default class SanitizerSubproviderRequest extends Subprovider {
   private createRequestParams(RequestParams: any, method: string) {
     const self = this
     var created = extend(
-      create.reduce(function (copy: any, create: string) {
+      create.reduce(function(copy: any, create: string) {
         switch (create) {
           case 'db':
             copy[create] =

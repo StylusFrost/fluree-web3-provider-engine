@@ -172,7 +172,7 @@ export default class FetchSubprovider extends Subprovider {
       case 'fluree_new_db': // REQUEST  unsigned create a new database in the transactor group
         uri = uri + 'new-db'
         break
-        case 'fluree_sign_new_db': // REQUEST  signed create a new database in the transactor group
+      case 'fluree_sign_new_db': // REQUEST  signed create a new database in the transactor group
         uri = uri + 'new-db'
         break
       case 'fluree_sign_snapshot': // REQUEST  signed create a LOCAL snapshot of a particular ledger

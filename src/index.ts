@@ -85,7 +85,8 @@ export default class Web3ProviderEngine extends EventEmitter {
       if (currentProvider >= self.providers.length) {
         end(
           new Error(
-            `Request for method "${payload['method']}" not handled by any subprovider. Please check your subprovider configuration to ensure this method is handled.`),
+            `Request for method "${payload['method']}" not handled by any subprovider. Please check your subprovider configuration to ensure this method is handled.`,
+          ),
         )
       } else {
         try {
