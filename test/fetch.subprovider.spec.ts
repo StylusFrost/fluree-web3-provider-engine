@@ -16,7 +16,7 @@ import NonceTracker from '../src/subproviders/nonce-tracker'
 
 const rpcUrl = 'http://localhost:8080/'
 const rdnDatabase = RandomId()
-const database = 'testnet/' + rdnDatabase
+const database = `testnet${rdnDatabase}`
 
 const authID = Buffer.from(
   '5466386f764864676e445a58724d7a71454c706131787331636664684a696533507761',
@@ -39,7 +39,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Request(requestParams)
+          const request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -49,12 +49,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_health',
       params: [
         {
@@ -109,7 +109,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Request(requestParams)
+          const request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -119,12 +119,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_dbs',
       params: [
         {
@@ -177,7 +177,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Request(requestParams)
+          const request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -187,12 +187,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_new_db',
       params: [
         {
@@ -234,6 +234,7 @@ describe('fetch test with sign', () => {
     })
   })
   it('verify sign_fluree_snapshot **** WAIT FOR DATABASE CREATION', function(done) {
+    // tslint:disable-next-line
     this.timeout(25000)
 
     setTimeout(() => {
@@ -247,7 +248,7 @@ describe('fetch test with sign', () => {
             cb(null, [authID])
           },
           signRequest: function(requestParams: any, cb: any) {
-            var request = new Request(requestParams)
+            const request = new Request(requestParams)
             request.sign(privateKey)
             cb(null, request)
           },
@@ -257,12 +258,12 @@ describe('fetch test with sign', () => {
       // Fetch provider
       const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-      var engine = new ProviderEngine()
+      const engine = new ProviderEngine()
       engine.addProvider(providerA)
       engine.addProvider(providerB)
       engine.addProvider(providerC)
 
-      var requestPayload = {
+      const requestPayload = {
         method: 'fluree_sign_snapshot',
         params: [
           {
@@ -316,7 +317,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Request(requestParams)
+          const request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -326,12 +327,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_list_snapshots',
       params: [
         {
@@ -383,7 +384,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Request(requestParams)
+          const request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -393,12 +394,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_export',
       params: [
         {
@@ -450,7 +451,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signQuery: function(queryParams: any, cb: any) {
-          var query = new Query(queryParams)
+          const query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
         },
@@ -460,12 +461,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_query',
       params: [
         {
@@ -525,7 +526,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signQuery: function(queryParams: any, cb: any) {
-          var query = new Query(queryParams)
+          const query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
         },
@@ -535,12 +536,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_multi_query',
       params: [
         {
@@ -600,7 +601,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signQuery: function(queryParams: any, cb: any) {
-          var query = new Query(queryParams)
+          const query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
         },
@@ -610,12 +611,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_block_query',
       params: [
         {
@@ -667,7 +668,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signQuery: function(queryParams: any, cb: any) {
-          var query = new Query(queryParams)
+          const query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
         },
@@ -677,12 +678,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_history_query',
       params: [
         {
@@ -741,7 +742,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signQuery: function(queryParams: any, cb: any) {
-          var query = new Query(queryParams)
+          const query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
         },
@@ -751,12 +752,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_graphql_query',
       params: [
         {
@@ -815,7 +816,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signQuery: function (queryParams: any, cb: any) {
-          var query = new Query(queryParams)
+          const query=? new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
         },
@@ -827,12 +828,12 @@ describe('fetch test with sign', () => {
 
 
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-   var requestPayload = {
+   const requestPayload = {
       method: 'fluree_sign_sparql_query',
       params: [
         {
@@ -888,7 +889,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signTransaction: function(txParams: any, cb: any) {
-          var tx = new Transaction(txParams)
+          const tx = new Transaction(txParams)
           tx.sign(privateKey)
           cb(null, tx)
         },
@@ -896,10 +897,10 @@ describe('fetch test with sign', () => {
     )
 
     // handle nonce requests
-    var providerC = new injectMetrics(new NonceTracker())
+    const providerC = new injectMetrics(new NonceTracker())
 
     // handle all bottom requests
-    var providerD = new injectMetrics(
+    const providerD = new injectMetrics(
       new FixtureProvider({
         fluree_getTransactionCount: '0x01',
       }),
@@ -908,14 +909,14 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerE = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
     engine.addProvider(providerD)
     engine.addProvider(providerE)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_transact',
       params: [
         {
@@ -998,7 +999,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Query(requestParams)
+          const request = new Query(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -1008,12 +1009,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_reindex',
       params: [
         {
@@ -1066,7 +1067,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Query(requestParams)
+          const request = new Query(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -1076,12 +1077,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_gen_flakes',
       params: [
         {
@@ -1143,7 +1144,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Query(requestParams)
+          const request = new Query(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -1153,12 +1154,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_block_range_with_txn',
       params: [
         {
@@ -1211,7 +1212,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Query(requestParams)
+          const request = new Query(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -1221,12 +1222,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_ledger_stats',
       params: [
         {
@@ -1278,7 +1279,7 @@ describe('fetch test with sign', () => {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Request(requestParams)
+          const request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
@@ -1288,12 +1289,12 @@ describe('fetch test with sign', () => {
     // Fetch provider
     const providerC = new injectMetrics(new FetchSubprovider({ rpcUrl, database }))
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
 
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_delete_db',
       params: [
         {

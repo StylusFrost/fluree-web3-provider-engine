@@ -15,7 +15,7 @@ import { RandomId } from '../src/util/random-id'
 
 const rpcUrl = 'http://localhost:8080/'
 const rdnDatabase = RandomId()
-const database = 'testnet/' + rdnDatabase
+const database = `testnet${rdnDatabase}`
 
 describe('Sign', () => {
   it('tx', done => {
@@ -31,16 +31,16 @@ describe('Sign', () => {
       '6a5f415f49986006815ae7887016275aac8ffb239f9a2fa7let300578582b6c2',
       'hex',
     )
-    var providerA = new SanitizerSubproviderTx({ rpcUrl, database })
+    const providerA = new SanitizerSubproviderTx({ rpcUrl, database })
 
     // sign all
-    var providerB = new injectMetrics(
+    const providerB = new injectMetrics(
       new HookedWalletProvider({
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
         signTransaction: function(txParams: any, cb: any) {
-          var tx = new Transaction(txParams)
+          const tx = new Transaction(txParams)
           tx.sign(privateKey)
           cb(null, tx)
         },
@@ -48,26 +48,26 @@ describe('Sign', () => {
     )
 
     // handle nonce requests
-    var providerC = new injectMetrics(new NonceTracker())
+    const providerC = new injectMetrics(new NonceTracker())
     // handle all bottom requests
-    var providerD = new injectMetrics(
+    const providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendTransaction: function(payload: any, next: Function, done: Function) {
-          let rawTx = payload.params[0]
-          var tx = new Transaction(rawTx)
+        fluree_sendTransaction: function(payload: any, _next: Function, done: Function) {
+          const rawTx = payload.params[0]
+          const tx = new Transaction(rawTx)
           done(null, tx)
         },
         fluree_getTransactionCount: '0x00',
       }),
     )
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
     engine.addProvider(providerD)
 
-    var txPayload = {
+    const txPayload = {
       method: 'fluree_sign_transact',
       params: [
         {
@@ -139,37 +139,37 @@ describe('Sign', () => {
       '6a5f415f49986006815ae7887016275aac8ffb239f9a2fa7let300578582b6c2',
       'hex',
     )
-    var providerA = new SanitizerSubproviderRequest({ rpcUrl, database })
+    const providerA = new SanitizerSubproviderRequest({ rpcUrl, database })
 
     // sign all
-    var providerB = new injectMetrics(
+    const providerB = new injectMetrics(
       new HookedWalletProvider({
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
         signRequest: function(requestParams: any, cb: any) {
-          var request = new Request(requestParams)
+          const request = new Request(requestParams)
           request.sign(privateKey)
           cb(null, request)
         },
       }),
     )
     // handle all bottom requests
-    var providerD = new injectMetrics(
+    const providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendRequest: function(payload: any, next: Function, done: Function) {
-          let rawRequest = payload.params[0]
-          var request = new Request(rawRequest)
+        fluree_sendRequest: function(payload: any, _next: Function, done: Function) {
+          const rawRequest = payload.params[0]
+          const request = new Request(rawRequest)
           done(null, request)
         },
       }),
     )
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerD)
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_delete_db',
       params: [
         {
@@ -227,37 +227,37 @@ describe('Sign', () => {
       '6a5f415f49986006815ae7887016275aac8ffb239f9a2fa7let300578582b6c2',
       'hex',
     )
-    var providerA = new SanitizerSubproviderQuery({ rpcUrl, database })
+    const providerA = new SanitizerSubproviderQuery({ rpcUrl, database })
 
     // sign all
-    var providerB = new injectMetrics(
+    const providerB = new injectMetrics(
       new HookedWalletProvider({
         getAccounts: function(cb: any) {
           cb(null, [authID])
         },
         signQuery: function(queryParams: any, cb: any) {
-          var query = new Query(queryParams)
+          const query = new Query(queryParams)
           query.sign(privateKey)
           cb(null, query)
         },
       }),
     )
     // handle all bottom requests
-    var providerD = new injectMetrics(
+    const providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendQuery: function(payload: any, next: Function, done: Function) {
-          let rawQuery = payload.params[0]
-          var query = new Query(rawQuery)
+        fluree_sendQuery: function(payload: any, _next: Function, done: Function) {
+          const rawQuery = payload.params[0]
+          const query = new Query(rawQuery)
           done(null, query)
         },
       }),
     )
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerD)
-    var requestPayload = {
+    const requestPayload = {
       method: 'fluree_sign_query',
       params: [
         {
@@ -320,10 +320,10 @@ describe('Sign', () => {
       'hex',
     )
 
-    var providerA = new SanitizerSubproviderTx({ rpcUrl, database })
+    const providerA = new SanitizerSubproviderTx({ rpcUrl, database })
 
     // sign all
-    var providerB = new injectMetrics(
+    const providerB = new injectMetrics(
       new HookedWalletProvider({
         getAccounts: function(cb: any) {
           cb(null, [authID])
@@ -332,26 +332,26 @@ describe('Sign', () => {
     )
 
     // handle nonce requests
-    var providerC = new injectMetrics(new NonceTracker())
+    const providerC = new injectMetrics(new NonceTracker())
     // handle all bottom requests
-    var providerD = new injectMetrics(
+    const providerD = new injectMetrics(
       new FixtureProvider({
-        fluree_sendTransaction: function(payload: any, next: Function, done: Function) {
-          let rawTx = payload.params[0]
-          var tx = new Transaction(rawTx)
+        fluree_sendTransaction: function(payload: any, _next: Function, done: Function) {
+          const rawTx = payload.params[0]
+          const tx = new Transaction(rawTx)
           done(null, tx)
         },
         fluree_getTransactionCount: '0x00',
       }),
     )
 
-    var engine = new ProviderEngine()
+    const engine = new ProviderEngine()
     engine.addProvider(providerA)
     engine.addProvider(providerB)
     engine.addProvider(providerC)
     engine.addProvider(providerD)
 
-    var txPayload = {
+    const txPayload = {
       method: 'fluree_sign_transact',
       params: [
         {
@@ -364,7 +364,7 @@ describe('Sign', () => {
     }
 
     engine.start()
-    engine.sendAsync(createPayload(txPayload), function(err: Error, response: any) {
+    engine.sendAsync(createPayload(txPayload), function(err: Error, _response: any) {
       assert.ok(err, 'did error')
       engine.stop()
       done()

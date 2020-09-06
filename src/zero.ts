@@ -84,7 +84,7 @@ function createDataSubprovider(connectionType: string | undefined, opts: any = {
   if (!connectionType) {
     return new FetchSubprovider({ rpcUrl, debug })
   }
-  // TODO
+  // TODO Hacer funcionar por ws
   /*
     if (connectionType === 'ws') {
       return new WebSocketSubprovider({ rpcUrl, debug })

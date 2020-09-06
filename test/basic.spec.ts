@@ -2,7 +2,6 @@ import assert = require('assert')
 import ProviderEngine from '../src/index'
 import PassthroughProvider from './util/passthrough'
 import FixtureProvider from '../src/subproviders/fixture'
-//import TestBlockProvider from './util/block'
 import createPayload from '../src/util/create-payload'
 import injectMetrics from './util/inject-metrics'
 

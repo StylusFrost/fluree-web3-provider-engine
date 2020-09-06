@@ -11,7 +11,7 @@ const url = require('url')
 
 const rpcUrl = 'http://localhost:8080/'
 const rdnDatabase = RandomId()
-const database = 'testnet/' + rdnDatabase
+const database = `testnet${rdnDatabase}`
 const authID = Buffer.from(
   '5466477641644b48326e526456347a503479427a346b4a325239577a59484465324556',
   'hex',
