@@ -15,7 +15,7 @@ import { RandomId } from '../src/util/random-id'
 
 const rpcUrl = 'http://localhost:8080/'
 const rdnDatabase = RandomId()
-const database = `testnet${rdnDatabase}`
+const database = `testnet/${rdnDatabase}`
 
 describe('Sign', () => {
   it('tx', done => {

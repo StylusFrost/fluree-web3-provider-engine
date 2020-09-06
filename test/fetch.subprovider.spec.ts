@@ -16,7 +16,7 @@ import NonceTracker from '../src/subproviders/nonce-tracker'
 
 const rpcUrl = 'http://localhost:8080/'
 const rdnDatabase = RandomId()
-const database = `testnet${rdnDatabase}`
+const database = `testnet/${rdnDatabase}`
 
 const authID = Buffer.from(
   '5466386f764864676e445a58724d7a71454c706131787331636664684a696533507761',
