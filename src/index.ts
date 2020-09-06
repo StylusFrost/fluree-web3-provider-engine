@@ -16,7 +16,7 @@ export default class Web3ProviderEngine extends EventEmitter {
     this.ready = new Stoplight()
     this.providers = []
   }
-  public start(cb = () => {}) {
+  public start() {
     // trigger start
     this.ready.go()
     // update state
@@ -51,7 +51,7 @@ export default class Web3ProviderEngine extends EventEmitter {
     this.providers.splice(index, 1)
   }
 
-  public send(payload: Object) {
+  public send() {
     throw new Error('Web3ProviderEngine does not support synchronous requests.')
   }
 
@@ -69,12 +69,10 @@ export default class Web3ProviderEngine extends EventEmitter {
 
   // private
   private handleAsync(payload: any, finished: any) {
-    var self = this
-    var currentProvider = -1
-    var result = null
-    var error = null
+    const self = this
+    let currentProvider = -1
 
-    var stack: any = []
+    const stack: any = []
 
     next()
 
@@ -87,14 +85,11 @@ export default class Web3ProviderEngine extends EventEmitter {
       if (currentProvider >= self.providers.length) {
         end(
           new Error(
-            'Request for method "' +
-              payload['method'] +
-              '" not handled by any subprovider. Please check your subprovider configuration to ensure this method is handled.',
-          ),
+            `Request for method "${payload['method']}" not handled by any subprovider. Please check your subprovider configuration to ensure this method is handled.`),
         )
       } else {
         try {
-          var provider = self.providers[currentProvider]
+          const provider = self.providers[currentProvider]
           provider.handleRequest(payload, next, end)
         } catch (e) {
           end(e)
@@ -116,7 +111,7 @@ export default class Web3ProviderEngine extends EventEmitter {
           }
         },
         () => {
-          var resultObj: any = {
+          const resultObj: any = {
             id: payload['id'],
             jsonrpc: payload['jsonrpc'],
             result: result,

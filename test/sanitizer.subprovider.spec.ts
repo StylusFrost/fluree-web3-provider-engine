@@ -1,40 +1,64 @@
 import assert = require('assert')
 import ProviderEngine from '../src/index'
-import FixtureProvider from '../src/subproviders/fixture'
+import injectMetrics from './util/inject-metrics'
 import SanitizerSubproviderTx from '../src/subproviders/sanitizer-tx'
 import SanitizerSubproviderQuery from '../src/subproviders/sanitizer-query'
 import SanitizerSubproviderRequest from '../src/subproviders/sanitizer-request'
-const extend = require('xtend')
+import { RandomId } from '../src/util/random-id'
+import createPayload from '../src/util/create-payload'
+import FixtureProvider from '../src/subproviders/fixture'
+const url = require('url')
+
+const rpcUrl = 'http://localhost:8080/'
+const rdnDatabase = RandomId()
+const database = 'testnet/' + rdnDatabase
+const authID = Buffer.from(
+  '5466477641644b48326e526456347a503479427a346b4a325239577a59484465324556',
+  'hex',
+)
 
 describe('Sanitizer', () => {
-  it('Sanitizer removes unknown keys from tx', function(done) {
-    var engine = new ProviderEngine()
+  it('Sanitizer removes unknown keys from tx and generate necesary keys', function(done) {
+    const engine = new ProviderEngine()
 
-    var sanitizer = new SanitizerSubproviderTx()
-    engine.addProvider(sanitizer)
+   
 
-    // test sanitization
-    var checkSanitizer = new FixtureProvider({
-      test_unsanitized: (payload: any, next: Function, end: Function) => {
-        if (payload.method !== 'test_unsanitized') return next()
-        const firstParam = payload.params[0]
-        assert.equal(firstParam && !firstParam.foo, true)
+    const providerA = new injectMetrics(new SanitizerSubproviderTx({ rpcUrl, database }))
+    engine.addProvider(providerA)
+
+    const checkSanitizer = new FixtureProvider({
+      'fluree_sign_transact': (req: any, next: Function, end: Function) => {
+        if (req.method !== 'fluree_sign_transact') return next()
         assert.equal(
-          firstParam.tx,
+          req['params'][0].type,
+          '0x' + Buffer.from('fluree_sign_transact').toString('hex'),
+        )
+        assert.equal(
+          req['params'][0].host,
+          '0x' + Buffer.from(url.parse(rpcUrl, true).host).toString('hex'),
+        )
+        assert.equal(req['params'][0].db, '0x' + Buffer.from(database).toString('hex'))
+        assert.equal(req['params'][0].from, '0x' + authID.toString('hex'))
+        assert.equal(
+          req['params'][0].tx,
           '0x5b7b225f6964223a225f636f6c6c656374696f6e247365616c222c226e616d65223a227365616c222c22646f63223a224120636f6c6c656374696f6e20746f20686f6c642074686520696e666f726d6174696f6e206f6620746865207365616c73227d5d',
         )
-        assert.equal(!firstParam.formattedDate, true)
-        assert.equal(!firstParam.param, true)
+        assert.ok(req['params'][0].expire)
+        assert.ok(!req['params'][0].foo)
+        assert.ok(!req['params'][0].formattedDate)
+        assert.ok(!req['params'][0].topics)
+        assert.ok(!req['params'][0].param)
         end(null, { baz: 'bam' })
       },
     })
     engine.addProvider(checkSanitizer)
-    engine.start()
 
-    var payload = {
-      method: 'test_unsanitized',
+    engine.start()
+    const payload = {
+      method: 'fluree_sign_transact',
       params: [
         {
+          from: '0x' + authID.toString('hex'),
           foo: 'bar',
           tx:
             '0x5b7b225f6964223a225f636f6c6c656374696f6e247365616c222c226e616d65223a227365616c222c22646f63223a224120636f6c6c656374696f6e20746f20686f6c642074686520696e666f726d6174696f6e206f6620746865207365616c73227d5d',
@@ -45,39 +69,51 @@ describe('Sanitizer', () => {
         },
       ],
     }
-    engine.sendAsync(payload, function(err: Error, response: any) {
+    engine.sendAsync(createPayload(payload), function(err: Error, response: any) {
+      assert.ifError(err)
+      assert.ok(response, 'has response')
       engine.stop()
-      assert.equal(!err, true)
-      assert.equal(response.result.baz, 'bam', 'result was received correctly')
       done()
     })
   })
 
-  it('Sanitizer removes unknown keys from request', function(done) {
-    var engine = new ProviderEngine()
+  it('Sanitizer removes unknown keys from request and generate necesary keys', function(done) {
+    const engine = new ProviderEngine()
 
-    var sanitizer = new SanitizerSubproviderRequest()
-    engine.addProvider(sanitizer)
+   
 
-    // test sanitization
-    var checkSanitizer = new FixtureProvider({
-      test_unsanitized: (payload: any, next: Function, end: Function) => {
-        if (payload.method !== 'test_unsanitized') return next()
-        const firstParam = payload.params[0]
-        assert.equal(firstParam && !firstParam.foo, true)
-        assert.equal(!firstParam.tx, true)
-        assert.equal(!firstParam.formattedDate, false)
-        assert.equal(firstParam.param, '0x6869207468657265')
+    const providerA = new injectMetrics(new SanitizerSubproviderRequest({ rpcUrl, database }))
+    engine.addProvider(providerA)
+
+    const checkSanitizer = new FixtureProvider({
+      'fluree_sign_delete_db': (req: any, next: Function, end: Function) => {
+        if (req.method !== 'fluree_sign_delete_db') return next()
+        assert.equal(
+          req['params'][0].type,
+          '0x' + Buffer.from('fluree_sign_delete_db').toString('hex'),
+        )
+        assert.equal(
+          req['params'][0].host,
+          '0x' + Buffer.from(url.parse(rpcUrl, true).host).toString('hex'),
+        )
+        assert.equal(req['params'][0].db, '0x' + Buffer.from(database).toString('hex'))
+        assert.equal(req['params'][0].param, '0x6869207468657265')
+        assert.equal(req['params'][0].from, '0x' + authID.toString('hex'))
+        assert.ok(req['params'][0].formattedDate)
+        assert.ok(!req['params'][0].tx)
+        assert.ok(!req['params'][0].foo)
+        assert.ok(!req['params'][0].topics)
         end(null, { baz: 'bam' })
       },
     })
     engine.addProvider(checkSanitizer)
-    engine.start()
 
-    var payload = {
-      method: 'test_unsanitized',
+    engine.start()
+    const payload = {
+      method: 'fluree_sign_delete_db',
       params: [
         {
+          from: '0x' + authID.toString('hex'),
           foo: 'bar',
           tx:
             '0x5b7b225f6964223a225f636f6c6c656374696f6e247365616c222c226e616d65223a227365616c222c22646f63223a224120636f6c6c656374696f6e20746f20686f6c642074686520696e666f726d6174696f6e206f6620746865207365616c73227d5d',
@@ -88,38 +124,49 @@ describe('Sanitizer', () => {
         },
       ],
     }
-    engine.sendAsync(payload, function(err: Error, response: any) {
+    engine.sendAsync(createPayload(payload), function(err: Error, response: any) {
+      assert.ifError(err)
+      assert.ok(response, 'has response')
+
       engine.stop()
-      assert.equal(!err, true)
-      assert.equal(response.result.baz, 'bam', 'result was received correctly')
       done()
     })
   })
-  it('Sanitizer removes unknown keys from query', function(done) {
-    var engine = new ProviderEngine()
+  it('Sanitizer removes unknown keys from query and generate necesary keys', function(done) {
+    const engine = new ProviderEngine()
 
-    var sanitizer = new SanitizerSubproviderQuery()
-    engine.addProvider(sanitizer)
+   
 
-    // test sanitization
-    var checkSanitizer = new FixtureProvider({
-      test_unsanitized: (payload: any, next: Function, end: Function) => {
-        if (payload.method !== 'test_unsanitized') return next()
-        const firstParam = payload.params[0]
-        assert.equal(firstParam && !firstParam.foo, true)
-        assert.equal(!firstParam.tx, true)
-        assert.equal(!firstParam.formattedDate, false)
-        assert.equal(firstParam.param, '0x6869207468657265')
+    const providerA = new injectMetrics(new SanitizerSubproviderQuery({ rpcUrl, database }))
+    engine.addProvider(providerA)
+
+    const checkSanitizer = new FixtureProvider({
+      'fluree_sign_query': (req: any, next: Function, end: Function) => {
+        if (req.method !== 'fluree_sign_query') return next()
+        assert.equal(req['params'][0].type, '0x' + Buffer.from('fluree_sign_query').toString('hex'))
+        assert.equal(
+          req['params'][0].host,
+          '0x' + Buffer.from(url.parse(rpcUrl, true).host).toString('hex'),
+        )
+        assert.equal(req['params'][0].db, '0x' + Buffer.from(database).toString('hex'))
+        assert.equal(req['params'][0].param, '0x6869207468657265')
+        assert.equal(req['params'][0].from, '0x' + authID.toString('hex'))
+        assert.ok(req['params'][0].formattedDate)
+        assert.ok(!req['params'][0].tx)
+        assert.ok(!req['params'][0].foo)
+        assert.ok(!req['params'][0].topics)
+
         end(null, { baz: 'bam' })
       },
     })
     engine.addProvider(checkSanitizer)
-    engine.start()
 
-    var payload = {
-      method: 'test_unsanitized',
+    engine.start()
+    const payload = {
+      method: 'fluree_sign_query',
       params: [
         {
+          from: '0x' + authID.toString('hex'),
           foo: 'bar',
           tx:
             '0x5b7b225f6964223a225f636f6c6c656374696f6e247365616c222c226e616d65223a227365616c222c22646f63223a224120636f6c6c656374696f6e20746f20686f6c642074686520696e666f726d6174696f6e206f6620746865207365616c73227d5d',
@@ -130,10 +177,11 @@ describe('Sanitizer', () => {
         },
       ],
     }
-    engine.sendAsync(payload, function(err: Error, response: any) {
+    engine.sendAsync(createPayload(payload), function(err: Error, response: any) {
+      assert.ifError(err)
+      assert.ok(response, 'has response')
+
       engine.stop()
-      assert.equal(!err, true)
-      assert.equal(response.result.baz, 'bam', 'result was received correctly')
       done()
     })
   })

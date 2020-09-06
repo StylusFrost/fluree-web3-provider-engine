@@ -1,6 +1,6 @@
 const extend = require('xtend')
-import FixtureProvider from './fixture.js'
-const version = require('../package.json').version
+import FixtureProvider from './fixture'
+const version = require('../../package.json').version
 
 export default class DefaultFixtures extends FixtureProvider {
   constructor(opts?: any) {

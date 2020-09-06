@@ -1,8 +1,8 @@
 /*
  * Emulate 'fluree_accounts'
- * 'fluree_sendTransaction' using 'flure_sendRawTransaction'
- * 'fluree_sendRequest' using 'flure_sendRawRequest'
- * 'fluree_sendQuery' using 'flure_sendRawQuery'
+ * 'fluree_sendTransaction'
+ * 'fluree_sendRequest'
+ * 'fluree_sendQuery'
  *
  * The four callbacks a user needs to implement are:
  * - getAccounts()        -- array of authIDs supported
@@ -113,8 +113,7 @@ export default class HookedWalletSubprovider extends Subprovider {
           end(null, accounts)
         })
         return
-
-      case 'fluree_sendTransaction':
+      case 'fluree_sign_transact':
         txParams = payload.params[0]
         waterfall(
           [
@@ -124,7 +123,18 @@ export default class HookedWalletSubprovider extends Subprovider {
           end,
         )
         return
-      case 'fluree_sendRequest':
+      case 'fluree_sign_delete_db':
+      case 'fluree_sign_health':
+      case 'fluree_sign_dbs':
+      case 'fluree_sign_new_db':
+      case 'fluree_sign_delete_db':
+      case 'fluree_sign_snapshot':
+      case 'fluree_sign_list_snapshots':
+      case 'fluree_sign_export':
+      case 'fluree_sign_reindex':
+      case 'fluree_sign_gen_flakes':
+      case 'fluree_sign_block_range_with_txn':
+      case 'fluree_sign_ledger_stats':
         requestParams = payload.params[0]
         waterfall(
           [
@@ -134,7 +144,12 @@ export default class HookedWalletSubprovider extends Subprovider {
           end,
         )
         return
-      case 'fluree_sendQuery':
+      case 'fluree_sign_query':
+      case 'fluree_sign_multi_query':
+      case 'fluree_sign_block_query':
+      case 'fluree_sign_history_query':
+      case 'fluree_sign_graphql_query':
+      case 'fluree_sign_sparql_query':
         queryParams = payload.params[0]
         waterfall(
           [
@@ -177,7 +192,6 @@ export default class HookedWalletSubprovider extends Subprovider {
           end,
         )
         return
-
       default:
         next()
         return
@@ -298,13 +312,13 @@ export default class HookedWalletSubprovider extends Subprovider {
   public validateRequest(requestParams: any, cb: Function) {
     // shortcut: undefined sender is invalid
     if (requestParams.from === undefined)
-      return cb(new Error(`Undefined authID - from authID required to sign transaction.`))
+      return cb(new Error(`Undefined authID - from authID required to sign request.`))
     this.validateSender(requestParams.from, function(err: Error, senderIsValid: Boolean) {
       if (err) return cb(err)
       if (!senderIsValid)
         return cb(
           new Error(
-            `Unknown authID - unable to sign transaction for this authID: "${requestParams.from}"`,
+            `Unknown authID - unable to sign request for this authID: "${requestParams.from}"`,
           ),
         )
       cb()
@@ -408,21 +422,21 @@ export default class HookedWalletSubprovider extends Subprovider {
   public finalizeQuery(queryParams: any, cb: Function) {
     waterfall([this.signQuery.bind(this)], function(err: Error, signedQuery: any) {
       if (err) return cb(err)
-      cb(null, { raw: signedQuery, tx: queryParams })
+      cb(null, { raw: signedQuery, query: queryParams })
     })
   }
   public finalizeRequest(requestParams: any, cb: Function) {
     waterfall([this.signRequest.bind(this)], function(err: Error, signedRequest: any) {
       if (err) return cb(err)
-      cb(null, { raw: signedRequest, tx: requestParams })
+      cb(null, { raw: signedRequest, request: requestParams })
     })
   }
 
-  public publishTransaction(rawTx: string, cb: Function) {
+  public publishTransaction(tx: any, cb: Function) {
     this.emitPayload(
       {
-        method: 'fluree_sendRawTransaction',
-        params: [rawTx],
+        method: 'fluree_sendTransaction',
+        params: [tx.raw],
       },
       function(err: Error, res: any) {
         if (err) return cb(err)
@@ -430,11 +444,11 @@ export default class HookedWalletSubprovider extends Subprovider {
       },
     )
   }
-  public publishRequest(rawRequest: string, cb: Function) {
+  public publishRequest(request: any, cb: Function) {
     this.emitPayload(
       {
-        method: 'fluree_sendRawRequest',
-        params: [rawRequest],
+        method: 'fluree_sendRequest',
+        params: [request.raw],
       },
       function(err: Error, res: any) {
         if (err) return cb(err)
@@ -442,11 +456,11 @@ export default class HookedWalletSubprovider extends Subprovider {
       },
     )
   }
-  public publishQuery(rawQuery: string, cb: Function) {
+  public publishQuery(rawQuery: any, cb: Function) {
     this.emitPayload(
       {
-        method: 'fluree_sendRawQuery',
-        params: [rawQuery],
+        method: 'fluree_sendQuery',
+        params: [rawQuery.raw],
       },
       function(err: Error, res: any) {
         if (err) return cb(err)

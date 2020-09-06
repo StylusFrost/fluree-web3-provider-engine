@@ -43,14 +43,14 @@ export default class NonceTrackerSubprovider extends Subprovider {
         }
         return
 
-      case 'fluree_sendRawTransaction':
+      case 'fluree_sendTransaction':
         // allow the request to continue normally
         next(function(err: Error, result: any, cb: Function) {
           // only update local nonce if tx was submitted correctly
           if (err) return cb()
           // parse raw tx
           var rawTx = payload.params[0]
-          var tx = new Transaction(rawTx) // TODO: Verificar cómo llega una transacción a este punto
+          var tx = new Transaction(rawTx)
           // extract authID
           var authID = tx.getSenderAuthID()
           // extract nonce and increment
@@ -71,11 +71,11 @@ export default class NonceTrackerSubprovider extends Subprovider {
       /* case 'evm_revert':
                 this.nonceCache = {}
                 next()
-                return
-
-            default:
-                next()
                 return*/
+
+      default:
+        next()
+        return
     }
   }
 }
